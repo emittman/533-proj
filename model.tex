@@ -1,0 +1,11 @@
+% tex for model
+
+Model:
+\[Y_{mi} \sim Weibull(\eta_m, \beta_m)\]
+\[\sigma_m = \frac{1}{\beta_m} \quad \log(t_{p,m}) = \log(eta_m) + \sigma_m \Phi_{sev}(p)\]
+\[t_{p,m} \stackrel{i.i.d}{\sim} LN(\mu_1, \tau^2_1)\]
+\[\sigma_m \stackrel{i.i.d}{\sim} LN(\mu_2, \tau^2_2)]
+
+Priors:
+\[p(\mu_1,\mu_2) \propto 1\]
+\[\tau_1,\tau_2 \stackrel{ind.}{\sim} Half-Cauchy(0,10)\]
