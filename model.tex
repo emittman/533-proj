@@ -1,0 +1,14 @@
+% tex for model
+\documentclass{article}
+\usepackage{amsmath}
+\begin{document}
+Model:
+\[Y_{mi} \stackrel{ind.}{\sim} \operatorname{Weibull}(\eta_m, \beta_m)\]
+\[\sigma_m = \frac{1}{\beta_m}, \quad t_{p,m} = \exp\{\log(\eta_m) + \sigma_m \Phi_{sev}(p)\}\]
+\[\log(t_{p,m}) \stackrel{i.i.d}{\sim} \operatorname{t}(\nu = 5, \mu_1, \tau_1)\]
+\[\sigma_m \stackrel{i.i.d}{\sim} \operatorname{log-normal}(\mu_2, \tau^2_2)\]
+
+Priors:
+\[p(\mu_1,\mu_2) \propto 1\]
+\[\tau_1,\tau_2 \stackrel{ind.}{\sim} \operatorname{half-Cauchy}(0,10)\]
+\end{document}
