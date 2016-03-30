@@ -4,6 +4,7 @@ library(ggplot2)
 setwd("C:/Users/Colin/Downloads/")
 d <- readRDS("unit_summaries_full.rds")
 s<-readRDS("B01_t.rds")
+#small change test
 
 names(d) <- c("serial_number", "model", "start_time", "end_time", "failed")
 d$model <- as.factor(d$model)
