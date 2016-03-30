@@ -1,7 +1,7 @@
 library(rstan)
 library(plyr)
 library(ggplot2)
-setwd("C:/Users/Colin/Downloads/")
+setwd("C:/Users/Colin/Documents/GitHub/533-proj")
 d <- readRDS("unit_summaries_full.rds")
 s<-readRDS("B01_t.rds")
 #small change test
