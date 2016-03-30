@@ -1,4 +1,4 @@
-d <- readRDS("proj/unit_summaries_full.rds")
+d <- readRDS("unit_summaries_full.rds")
 names(d) <- c("serial_number", "model", "start_time", "end_time", "failed")
 d$model <- as.factor(d$model)
 
