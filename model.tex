@@ -3,14 +3,20 @@
 \documentclass{article}
 \usepackage{amsmath}
 \begin{document}
-Model:
+We used a Bayesian modeling approach to estimate the Weibull parameters for each model. Rather than modeling each model independently, we modeled the Weibull parameters hierarchically, to pool information and to provide better inferences, particularly for the brands that produced few failures. There were 5 models among the 21 with fewer than 10 failures (models 10, 12, 15, 16, 18). The model was fit using the rstan package in R \cite{stan}.
+
+We parameterized the Weibull in terms of a lower log quantile, $t_p$ (where $p=0.01$), and scale, $\sigma$. These were modeled by a Student's t with 5 degrees of freedom and a lognormal, respectively.
+
 \[Y_{mi} \stackrel{ind.}{\sim} \operatorname{Weibull}(\eta_m, \beta_m)\]
 \[\sigma_m = \frac{1}{\beta_m}, \quad t_{p,m} = \exp\{\log(\eta_m) + \sigma_m \Phi_{sev}(p)\}\]
 \[\log(t_{p,m}) \stackrel{i.i.d}{\sim} \operatorname{t}(\nu = 5, \mu_1, \tau_1)\]
 \[\sigma_m \stackrel{i.i.d}{\sim} \operatorname{log-normal}(\mu_2, \tau^2_2)\]
 
-Priors:
+The following uninformative and vague priors were used for the hyperparameters.
 \[p(\mu_1,\mu_2) \propto 1\]
 \[\tau_1,\tau_2 \stackrel{ind.}{\sim} \operatorname{half-Cauchy}(0,10)\]
+
+\bibliographystyle{plain}
+\bibliography{bibliography} 
 \end{document}
 
