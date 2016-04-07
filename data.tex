@@ -3,6 +3,7 @@
 \documentclass{article}
 \usepackage{url,graphicx,tabularx,array,amsmath,amssymb,amsthm,booktabs,float}
 \usepackage[margin=.65in]{geometry}
+\usepackage[toc,page]{appendix}
 \graphicspath{{C:/Users/Colin/Documents/GitHub/533-proj/}{C:\Users}}
 \begin{document}
 \noindent \textit{Data:}\\\\
@@ -18,5 +19,102 @@ The final sample included 21 hard drive models.  Below is a summary of the distr
 \centering
 \includegraphics[height=12cm]{sumstat3.pdf}
 \end{figure}
+
+We used a Bayesian modeling approach to estimate the Weibull parameters for each model. Rather than modeling each model independently, we modeled the Weibull parameters hierarchically, to pool information and to provide better inferences, particularly for the brands that produced few failures. The model was fit using the rstan package in R \cite{stan}.
+
+We parameterized the Weibull in terms of a lower log quantile, $t_p$ (where $p=0.01$), and scale, $\sigma$. These were modeled by a Student's t with 5 degrees of freedom and a lognormal, respectively.
+
+\[Y_{mi} \stackrel{ind.}{\sim} \operatorname{Weibull}(\eta_m, \beta_m)\]
+\[\sigma_m = \frac{1}{\beta_m}, \quad t_{p,m} = \exp\{\log(\eta_m) + \sigma_m \Phi_{sev}(p)\}\]
+\[\log(t_{p,m}) \stackrel{i.i.d}{\sim} \operatorname{t}(\nu = 5, \mu_1, \tau_1)\]
+\[\sigma_m \stackrel{i.i.d}{\sim} \operatorname{log-normal}(\mu_2, \tau^2_2)\]
+
+The following uninformative and vague priors were used for the hyperparameters.
+\[p(\mu_1,\mu_2) \propto 1\]
+\[\tau_1,\tau_2 \stackrel{ind.}{\sim} \operatorname{half-Cauchy}(0,10)\]
+
+\bibliographystyle{plain}
+\bibliography{bibliography} 
+\clearpage
+\begin{appendices}
+\section{Stan model:}
+{\scriptsize
+\begin{verbatim}
+data {
+  int<lower=0> N_obs;
+  int<lower=0> N_cens;
+  int<lower=0> N_tr_obs;
+  int<lower=0> N_tr_cens;
+  int<lower=0> M;
+
+  // right endpoints
+  real<lower=0> y_obs[N_obs];
+  real<lower=0> y_cens[N_cens];
+  real<lower=0> y_tr_obs[N_tr_obs];
+  real<lower=0> y_tr_cens[N_tr_cens];
+
+  // truncation points
+  real<lower=0> t_obs[N_tr_obs];
+  real<lower=0> t_cens[N_tr_cens];
+
+  // explanatory variable
+  int<lower=1, upper=M> x_obs[N_obs];
+  int<lower=1, upper=M> x_cens[N_cens];
+  int<lower=1, upper=M> x_tr_obs[N_tr_obs];
+  int<lower=1, upper=M> x_tr_cens[N_tr_cens];
+
+  // quantile to set prior on
+  real<lower=0, upper=1> p;
+}
+transformed data{
+  real<lower=0> Q;
+  Q <- -1.0 * log(1-p);
+}
+parameters {
+  vector[M] log_tp;
+  vector[M] log_sigma;
+  real m1;
+  real<lower=0> C1;
+  real m2;
+  real<lower=0> C2;
+}
+transformed parameters {
+  vector<lower=0>[M] eta;
+  vector<lower=0>[M] beta;
+  beta <- exp(-1.0 * log_sigma);
+  for(i in 1:M){
+    eta[i] <- exp(log_tp[i])/(Q^(1/beta[i]));
+  }
+}
+model {
+  for(i in 1:N_obs){
+    y_obs[i] ~ weibull(beta[x_obs[i]], eta[x_obs[i]]);
+  }
+
+  for(i in 1:N_cens){
+    increment_log_prob(weibull_ccdf_log(y_cens[i], beta[x_cens[i]], eta[x_cens[i]]));
+  }
+
+  for(i in 1:N_tr_obs){
+    increment_log_prob(        weibull_log(y_tr_obs[i], beta[x_tr_obs[i]], eta[x_tr_obs[i]]));
+    increment_log_prob(-1.0 * weibull_ccdf_log(t_obs[i], beta[x_tr_obs[i]], eta[x_tr_obs[i]]));
+  }
+
+  for(i in 1:N_tr_cens){
+    increment_log_prob(       weibull_ccdf_log(y_tr_cens[i], beta[x_tr_cens[i]], eta[x_tr_cens[i]]));
+    increment_log_prob(-1.0 * weibull_ccdf_log(    t_cens[i], beta[x_tr_cens[i]], eta[x_tr_cens[i]]));
+  }
+
+  log_tp ~ student_t(5, m1, C1);
+  log_sigma ~ normal(m2, C2);
+
+  //priors (improper prior on m1 and m2)
+  C1 ~ cauchy(0, 10);
+  C2 ~ cauchy(0,10);}
+  }
+  \end{verbatim}
+  }
+\end{appendices}
+
 \end{document}
 
