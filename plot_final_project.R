@@ -84,6 +84,7 @@ weibull_plot <- function(df, mod, alpha){
   l<-unique(x2$minstart)
   ul<-max(x2$time)+200
   z<-get_quantiles(l,ul,100,mod, alpha)
+
   plot <- ggplot(data = x2, aes(x=time, y=p)) +
     geom_point()+ ggtitle("Posterior Quantile Ribbon for Model")+
     geom_ribbon(data = z, aes(time, ymin=lower, ymax=upper),fill="grey70",alpha=.5,inherit.aes = FALSE)
