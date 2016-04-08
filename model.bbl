@@ -1,8 +1,0 @@
-\begin{thebibliography}{1}
-
-\bibitem{stan}
-{Stan Development Team}.
-\newblock Stan: A c++ library for probability and sampling, version 2.8.0,
-  2015.
-
-\end{thebibliography}

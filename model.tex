@@ -16,6 +16,14 @@ The following uninformative and vague priors were used for the hyperparameters.
 \[p(\mu_1,\mu_2) \propto 1\]
 \[\tau_1,\tau_2 \stackrel{ind.}{\sim} \operatorname{half-Cauchy}(0,10)\]
 
+The model for $Y_{mi}$ must be modified to accomodate the censoring and truncation patterns in the data. In the case of a failure that was observed and left-censored at $t_L$,
+\[Y_{mi} \sim \operatorname{TWeibull}(\eta_m, \beta_m, t_L, \infty),\]
+where $\operatorname{TWeibull}(\eta,\beta,a,b)$ is a truncated Weibull distribution with left and right truncation points a and b, respectively. For untruncated, right censored observations with censoring point $t_c$,
+\[Y_{mi} \sim \operatorname{Bernoulli}(1-\Phi(t_c)),\]
+Where $\Phi$ is the cdf for a $\operatorname{Weibull}(\eta_m,\beta_m)$ distribution.
+For observations that are both right censored and truncated,
+\[Y_{mi} \sim \operatorname{Bernoulii}(1-\Phi_{t_L}(t_c)),\]
+where $\Phi_{t_L}$ is the cdf for a left truncated Weibull distribution. 
 \bibliographystyle{plain}
 \bibliography{bibliography} 
 \end{document}
