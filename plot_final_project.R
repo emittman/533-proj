@@ -1,7 +1,7 @@
 library(rstan)
 library(plyr)
 library(ggplot2)
-setwd("C:/Users/Colin/Documents/GitHub/533-proj")
+#setwd("C:/Users/Colin/Documents/GitHub/533-proj")
 d <- readRDS("unit_summaries_full.rds")
 s<-readRDS("B01_t.rds")
 #small change test
@@ -86,16 +86,19 @@ weibull_plot <- function(df, mod, alpha){
   z<-get_quantiles(l,ul,100,mod, alpha)
 
   plot <- ggplot(data = x2, aes(x=time, y=p)) +
-    geom_point()+ ggtitle("Posterior Quantile Ribbon for Model")+
+    geom_point()+
     geom_ribbon(data = z, aes(time, ymin=lower, ymax=upper),fill="grey70",alpha=.5,inherit.aes = FALSE)
   return(plot)
 }
 
 #Plot
-weibull_plot(S,1, .20)
-weibull_plot(S,5)
-weibull_plot(S,11)
 
+plot1<-weibull_plot(S,1,.20)+ggtitle("Posterior 80% Quantile Ribbon for Model 1")
+plot2<-weibull_plot(S,11,.20)+ggtitle("Posterior 80% Quantile Ribbon for Model 11")
+plot3<-weibull_plot(S,15,.20)+ggtitle("Posterior 80% Quantile Ribbon for Model 15")
+plot4<-weibull_plot(S,21,.20)+ggtitle("Posterior 80% Quantile Ribbon for Model 21")
+#plot_grid(plot1, plot2, align='h')
+#plot_grid(plot3, plot4, align='h')
 
 head_to_head <- function(num1, num2){
   d_m1 <- d[d$model==num1,]

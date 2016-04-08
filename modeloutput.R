@@ -32,9 +32,9 @@ outputa <- matrix(ncol=4, nrow=21)
 for (i in 1:21){
   num=i
   seta <- paste0("log_tp[",num,"]",collapse="")
-  etal <- summary(s)$summary[seta,"2.5%"]
+  etal <- summary(s)$summary[seta,"25%"]
   etam <- summary(s)$summary[seta,"50%"]
-  etah <- summary(s)$summary[seta,"97.5%"]
+  etah <- summary(s)$summary[seta,"75%"]
   outputa[i,1] <- etal
   outputa[i,2] <- etam
   outputa[i,3]<- etah
