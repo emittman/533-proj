@@ -2,7 +2,7 @@
 
 \documentclass{scrartcl}
 \usepackage{url,graphicx,tabularx,array,amsmath,amssymb,amsthm,booktabs,float}
-\usepackage[margin=.65in]{geometry}
+\usepackage[margin=.65in, top=.5in, bottom=.8in]{geometry}
 \usepackage[toc,page]{appendix}
 \graphicspath{{C:/Users/Colin/Documents/GitHub/533-proj/}{C:\Users}}
 \title{Failure Time Distribution Estimation with Backblaze Hard Drive Data}
@@ -19,7 +19,7 @@ The raw data download from Backblaze contained 54,398 unique drives.  Before ana
 The final sample included 21 hard drive models.  Below is a summary of the distribution of failures, and total testing time for each model.  The total number of failures was 1030.  The majority of those failures came from models 5, 7, 9, and 11.  Not surprising, model 11, which had the most failures also had the longest total testing time; however, this relationship was not uniform across models.  Model 1 had the 2nd longest total testing time, but relatively few failures.
 \begin{figure}[H]
 \centering
-\includegraphics[height=8cm]{sumstat1.pdf}
+\includegraphics[height=7.5cm]{sumstat1.pdf}
 \end{figure}
 \noindent We also examined the distribution of failure times.  The shape is slightly skewed to the right with the majority of failures occurring within 250 days. However, with over 50,000 of the hard drives start times left truncated it is specious to infer that the failure times suffer from infant mortality.   
 \begin{figure}[H]
@@ -176,6 +176,5 @@ model {
   \end{verbatim}
   }
 \end{appendices}
-
 \end{document}
 
