@@ -14,9 +14,14 @@
 \noindent
 \maketitle
 \section*{Data}
-The data analyzed is hard drive testing data from the company, Backblaze.  Since 2013, Backblaze has been continuously spinning hard drives in controlled storage pods.  Hard drives are run till they fail or are right censored.  When a hard drive fails it is permanently removed from testing.  In addition, new hard drives are regularly added to the testing sample.  The latest data provided by Backblaze goes from January 1, 2015 to September 30, 2015.  Blackblaze provides over 70 variables on each hard drive; we will focus on the following subset: an indicator variable for the last day the hard drive was in service before failing, the number of hours a hard drive has been on test, and the model/brand of each hard drive.\\\\
-The raw data download from Backblaze contained 54,398 unique drives.  Before analyzing the data, however, we removed certain observations.  Any models with fewer than 100 drives in testing were excluded.  Also, drives that failed in fewer than 20 days were removed.  There were some other bizarre observations in the data; for example, hard drives listed as being in test for over 10 years or drives that entered and exited the sample on the same day.  These bizarre observations were likely due to mis-coding and were dropped.  After cleaning the data we had a sample size of 52,811 total drives for analysis.\\\\
+The data analyzed is hard drive testing data from the company, Backblaze\cite{backblaze}.  Since 2013, Backblaze has been continuously spinning hard drives in controlled storage pods.  Hard drives are run until they fail or are right censored.  When a hard drive fails it is permanently removed from testing.  In addition, new hard drives are regularly added to the testing sample.  We downloaded the latest data published by Backblaze dating from January 1, 2015 to September 30, 2015.  Blackblaze provides over 70 variables on each hard drive; we will focus on only the following subset: an indicator variable for the last day the hard drive was in service before failing, the number of hours a hard drive has been on test, and the model/brand of each hard drive.
+
+The raw data we downloaded from Backblaze contained 54,398 unique drives.  Because we are interested in making comparisons among models, we excluded models with fewer than 100 drives in testing.  Also, drives that failed in fewer than 20 days were removed; we justify excluding these data for the reason that they represent a failure mode that is not of interest.
+
+There were some other bizarre observations in the data; for example, hard drives listed as being in test for over 10 years or drives that entered and exited the sample on the same day.  These bizarre observations were likely due to mis-coding and were dropped.  After cleaning the data we had a sample size of 52,811 total drives for analysis.
+
 The final sample included 21 hard drive models.  Below is a summary of the distribution of failures, and total testing time for each model.  The total number of failures was 1030.  The majority of those failures came from models 5, 7, 9, and 11.  Not surprising, model 11, which had the most failures also had the longest total testing time; however, this relationship was not uniform across models.  Model 1 had the 2nd longest total testing time, but relatively few failures.
+
 \begin{figure}[H]
 \centering
 \includegraphics[height=7.5cm]{sumstat1.pdf}
@@ -51,7 +56,7 @@ For observations that are both right censored and truncated,
 where $\Phi_{t_L}$ is the cdf for a left truncated Weibull distribution. 
 
 \section*{Results}
-Stan's Hamiltonian MCMC simulates posterior distributions for each model's parameters.  Since $\eta$ is extremely far away from the majority of the data we focus on the posterior distribution of $t_p$ (where $p=0.01$) and $\beta$.  The plot below shows the median of the posterior estimate (in hours) along with error bars corresponding to the middle 50\% of the distribution.  Just focusing on the medians, there are differences in reliability across the hard drive brands: Model 2 takes the longest time to reach the .01 quantile, whereas Model 13 is the fastest.  Yet after taking into account the uncertainty around the medians, most differences are no longer statistically significant as the majority of the credible intervals overlap.  Only Models 11 (the most tested model), 13, and 21 have non-overlapping intervals.
+Stan's Hamiltonian MCMC simulates posterior distributions for each model's parameters.  Since $\eta$ is extremely far away from the majority of the data we focus on the posterior distribution of $t_p$ (where $p=0.01$) and $\beta$.  The plot below shows the median of the posterior estimate (in hours) along with error bars corresponding to the middle 50\% of the distribution.  Just focusing on the medians, there are differences in reliability across the hard drive brands: Model 2 takes the longest time to reach the .01 quantile, whereas Model 13 is the fastest.  Yet after taking into account the uncertainty around the medians, most differences are no longer statistically significant as the majority of the credible intervals overlap. Owing to greater posterior precision, we can reasonably claim that it is probable that models 11 and 14 reach 1\% failing slower than models 7, 8, 9, 12, 13, 15, 16, 17, 19 and 21.
 \begin{figure}[H]
 \centering
 \includegraphics[height=8cm]{postquant.pdf}
@@ -63,7 +68,7 @@ Stan's Hamiltonian MCMC simulates posterior distributions for each model's param
 \includegraphics[height=8cm]{postbeta.pdf}
 \end{figure}
 
-\noindent Finally, to assess model fit, we overlay the fitted models with an 80\% credible interval ribbon on top of the left truncated adjusted Kaplan-Meier non-parametric estimate.  The empirical CDF is on the y-axis; the x-axis is in terms of hours.  Looking at Model 1 and Model 11 we can see the Weibull model captures the data quite well.  It appears the credible interval for Model 1 is quite wide; however, the ribbon only covers a narrow range of about .01--and it should be noted that Model 1 only had 22 failures.  In contrast, Model 11 had 381 failures, and as expected the credible interval is thin with the data points hovering in the middle.
+\noindent Finally, to assess model fit, we overlay the fitted models with an 80\% credible interval ribbon on top of the left truncated adjusted Kaplan-Meier non-parametric estimate \cite{meeker2014statistical}.  The empirical CDF is on the y-axis; the x-axis is in terms of hours.  Looking at Model 1 and Model 11 we can see the Weibull model captures the data quite well.  It appears the credible interval for Model 1 is quite wide; however, the ribbon only covers a narrow range of about .01--and it should be noted that Model 1 only had 22 failures.  In contrast, Model 11 had 381 failures, and as expected the credible interval is thin with the data points hovering in the middle.
 
 \begin{figure}[H]
   \centering
