@@ -1,5 +1,15 @@
 \begin{thebibliography}{1}
 
+\bibitem{backblaze}
+Backblaze hard drive data sets.
+\newblock \url{https://www.backblaze.com/b2/hard-drive-test-data.html}.
+\newblock Accessed: 2016-4-1.
+
+\bibitem{meeker2014statistical}
+William~Q Meeker and Luis~A Escobar.
+\newblock {\em Statistical methods for reliability data}.
+\newblock John Wiley \& Sons, 2014.
+
 \bibitem{stan}
 {Stan Development Team}.
 \newblock Stan: A c++ library for probability and sampling, version 2.8.0,
