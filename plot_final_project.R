@@ -32,7 +32,7 @@ saved_levels <- levels(d$model)
 d$model <- as.integer(d$model)
 
 t <- ddply(d, .(model), summarize,
-            ends  = sort(unique(end_time[failed > 0])))
+            ends  = sort(unique(end_time[failed > 0]))) #sorted failure times for each model
             
 
 
@@ -42,9 +42,9 @@ table <- ldply(1:21, function(i){
                  di  = subset(d, model == i)
                  ldply(1:nrow(ti), function(j) {
                    tij = ti$ends[j]
-                   minst<-min(di$start_time) #min start time for that model
-                   nij = sum( di$start_time < tij & di$end_time >= tij )
-                   dij = sum( di$start_time < tij & di$end_time == tij & di$failed > 0)
+                   minst <- min(di$start_time) #min start time for that model
+                   nij = sum( di$start_time < tij & di$end_time >= tij ) #number at risk
+                   dij = sum( di$start_time < tij & di$end_time == tij & di$failed > 0) #number failed
                    ret = data.frame(ti = tij, ni = nij, di = dij, model = model, min_st=minst)
                  })
 })
@@ -53,28 +53,28 @@ table <- ldply(1:21, function(i){
 S <- ldply(1:21, function(i)
   {
     tab <- subset(table, model == i)
-    pi <- (tab$ni - tab$di) / tab$ni
-    S <- cumprod(pi)
+    pi <- (tab$ni - tab$di) / tab$ni #conditional survival probability
+    S <- cumprod(pi) #Survival probabilities
     data.frame(model = rep(i,length(S)),minstart=tab$min_st,Si = S, ni = tab$ni, di = tab$di, ti = tab$di, Fi = 1-S, time=tab$ti)
   }
 )
 
 #Add Ribbon
-samples <- extract(s)
+samples <- extract(s) #extracts MCMC samples to list of data.frames
 
 #Get Posterior Quantiles
-get_quantiles <- function(begin, end, length, model, alpha){
-  seq <-seq(begin, end, length.out = length)
-  par <- data.frame(beta = samples$beta[,model], eta = samples$eta[,model])
+get_quantiles <- function(begin, end, length, model, alpha){ #pointwise intervals for proportion failing
+  seq <-seq(begin, end, length.out = length) #grid over time
+  par <- data.frame(beta = samples$beta[,model], eta = samples$eta[,model]) 
   q <- ldply(seq, function(t){
-    probs <- sapply(1:4000, function(i) pweibull(t, par[i,1], par[i,2]))
+    probs <- sapply(1:4000, function(i) pweibull(t, par[i,1], par[i,2])) #get distribution of probability for one point on grid
     data.frame(time = t, lower = quantile(probs, alpha/2), upper = quantile(probs, 1-alpha/2))
   })
   return(q)
 }
 
 weibull_plot <- function(df, mod, alpha){
-  x<- subset(df,model==mod)
+  x<- subset(df,model==mod) #df contains K-M estimates
   sbeta1 <- paste0("beta[",mod,"]",collapse="")
   seta1 <- paste0("eta[",mod,"]",collapse="")
   beta1 <- summary(s)$summary[sbeta1,"50%"]
