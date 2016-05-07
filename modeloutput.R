@@ -44,6 +44,23 @@ for (i in 1:21){
 outa.dat<-as.data.frame(outputa)
 colnames(outa.dat) <- c("lb", "median","ub","model")
 
+#Get Eta Values
+output_eta <- matrix(ncol=4, nrow=21)
+for (i in 1:21){
+  num=i
+  seta <- paste0("eta[",num,"]",collapse="")
+  etal <- summary(s)$summary[seta,"25%"]
+  etam <- summary(s)$summary[seta,"50%"]
+  etah <- summary(s)$summary[seta,"75%"]
+  output_eta[i,1] <- etal
+  output_eta[i,2] <- etam
+  output_eta[i,3]<- etah
+  output_eta[i,4]<-i
+}
+
+eta.dat<-as.data.frame(output_eta)
+colnames(eta.dat) <- c("lb", "median","ub","model")
+
 #Untransform Log
 cols <- c("lb","median","ub")
 outa.dat[cols] <- exp(outa.dat[cols])
