@@ -10,7 +10,7 @@ par.data<-data.fit$summary
 parms <- sapply(data.fit[c("eta", "beta")], mean)
 
 #Extract 2.5, 50, 97.5% of param etimates for plotting
-
+#Get Beta Values
 outputb <- matrix(ncol=4, nrow=21)
 for (i in 1:21){
 num=i
@@ -32,9 +32,9 @@ outputa <- matrix(ncol=4, nrow=21)
 for (i in 1:21){
   num=i
   seta <- paste0("log_tp[",num,"]",collapse="")
-  etal <- summary(s)$summary[seta,"25%"]
+  etal <- summary(s)$summary[seta,"2.5%"]
   etam <- summary(s)$summary[seta,"50%"]
-  etah <- summary(s)$summary[seta,"75%"]
+  etah <- summary(s)$summary[seta,"97.5%"]
   outputa[i,1] <- etal
   outputa[i,2] <- etam
   outputa[i,3]<- etah
@@ -61,23 +61,26 @@ for (i in 1:21){
 eta.dat<-as.data.frame(output_eta)
 colnames(eta.dat) <- c("lb", "median","ub","model")
 
-#Untransform Log
+#Untransform Log for B01, and Convert to Days
 cols <- c("lb","median","ub")
 outa.dat[cols] <- exp(outa.dat[cols])
+outa.dat[cols] <- (outa.dat[cols])/24
 
 
 #Make Plots
 #for tp.01 quantile
+theme_set(theme_bw(base_size=18))
 ggplot(outa.dat, aes(x=model, y=median)) + 
   geom_errorbar(aes(ymin=lb, ymax=ub)) +
   geom_point()+
-  ggtitle("Posterior .01 Quantiles Distribution")+
-  ylab("t_.01")
+  ggtitle("95% Credible Interval for B01")+
+  ylab("B01")+xlab("Model")
 
 #for beta quantile
+theme_set(theme_bw(base_size=18))
 ggplot(outb.dat, aes(x=model, y=median)) + 
   geom_errorbar(aes(ymin=lb, ymax=ub)) +
   geom_point()+
   geom_hline(yintercept=1,linetype="dotted") +
-  ggtitle("Posterior Beta Distribution") +
-  ylab("beta")
+  ggtitle("95% Credible Interval for Beta") +
+  ylab(expression(beta))+xlab("Model")
