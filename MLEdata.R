@@ -38,8 +38,10 @@ write.table(file=paste("model",mod_list[i],".txt",sep=""),sep="\t",s,row.names=T
 
 #Commands to Run Weibull Model in R Splida, Make sure to Put Files in RSplidaTextData Folder
 
-for (i in 11:21){
+for (i in 1:21){
 name=paste("model",i,".txt",sep="")
 mod.i <- frame.to.ld(file=SplidaDataName(name),response.column=3,censor.column = 4,truncation.response.column=2, truncation.type.column=5, data.title = name, time.units = "Hours")
 weib.i<-mlest(mod.i,"Weibull")
 }
+#Write loop to pull theta matrix and vcv matrix
+
