@@ -25,15 +25,21 @@ saved_levels <- levels(d$model)
 
 d$model <- as.integer(d$model)
 
-#Get Data Ready for RSplida, Test with Model 11
-s11<-subset(d,model==11)
-s11$failed[s11$failed==0] <- 2
-s11$failed[s11$failed==1] <- 1
-s11$left <- "Left"
-s11 <- s11[c(-1)]
-write.table(s11, file="model11.txt",sep="\t",row.names=TRUE)
+#Get Data Ready for RSplida, Export to .txt files by model
+mod_list=seq(1,21)
+for (i in 1:21){
+s<-subset(d,model==i)
+#For Splida 2=Censor and 1 is Failure
+s$failed[s$failed==0] <- 2
+s$left <- "Left"
+s <- s[c(-1)]
+write.table(file=paste("model",mod_list[i],".txt",sep=""),sep="\t",s,row.names=TRUE)
+}
 
-#Commands to Run in R Splida
-dat <- read.table("C:/Users/Colin/Documents/Stat533/model11.txt", header = TRUE)
-mod11 <- frame.to.ld(file=SplidaDataName("model11.txt"),response.column=3,censor.column = 4,truncation.response.column=2, truncation.type.column=6, data.title = "Mod11", time.units = "Hours")
-weib11<-mlest(mod11,"Weibull")
+#Commands to Run Weibull Model in R Splida, Make sure to Put Files in RSplidaTextData Folder
+
+for (i in 11:21){
+name=paste("model",i,".txt",sep="")
+mod.i <- frame.to.ld(file=SplidaDataName(name),response.column=3,censor.column = 4,truncation.response.column=2, truncation.type.column=5, data.title = name, time.units = "Hours")
+weib.i<-mlest(mod.i,"Weibull")
+}
