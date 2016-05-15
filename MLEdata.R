@@ -38,10 +38,20 @@ write.table(file=paste("model",mod_list[i],".txt",sep=""),sep="\t",s,row.names=T
 
 #Commands to Run Weibull Model in R Splida, Make sure to Put Files in RSplidaTextData Folder
 
+mod.mle<-list()
 for (i in 1:21){
 name=paste("model",i,".txt",sep="")
-mod.i <- frame.to.ld(file=SplidaDataName(name),response.column=3,censor.column = 4,truncation.response.column=2, truncation.type.column=5, data.title = name, time.units = "Hours")
-weib.i<-mlest(mod.i,"Weibull")
+life.dat <- frame.to.ld(file=SplidaDataName(name),response.column=3,censor.column = 4,truncation.response.column=2, truncation.type.column=5, data.title = name, time.units = "Hours")
+weib<-mlest(life.dat,"Weibull")
+mu=weib$theta[1]
+sigma=weib$theta[2]
+vcv=weib$vcv
+df<-data.frame(mu,sigma,vcv)
+mod.mle[[i]]=df
 }
-#Write loop to pull theta matrix and vcv matrix
+
+#Models 1,2,4,16 couldn't estimate a covariance matrix
+#Extract Beta
+test=data.frame(beta=sapply(mod.mle, function(x) beta=1/x$sigma[1]))
+
 
