@@ -1,3 +1,4 @@
+library(SPREDA)
 d <- readRDS("unit_summaries_full.rds")
 names(d) <- c("serial_number", "model", "start_time", "end_time", "failed")
 d$model <- as.factor(d$model)
@@ -54,4 +55,54 @@ mod.mle[[i]]=df
 #Extract Beta
 test=data.frame(beta=sapply(mod.mle, function(x) beta=1/x$sigma[1]))
 
+#Try NOT Using Rsplida; Check with Model 1
 
+#log-likelihood function in terms of mu and sigma
+lliktruncr <- function (theta, y, d, trunctime) {
+  mu <- theta[1]
+  sigma <- theta[2]
+  
+  z <- (log(y)-mu)/sigma
+  ztrunc <- (log(trunctime)-mu)/sigma
+    sum(log(( (( 1/(sigma*y) * dsev(z))/(1-psev(ztrunc)) )^d)*
+                 (( (1-psev(z))/(1-psev(ztrunc)))^(1-d) )))
+    }
+
+
+#Set Initial values for Optim
+mu <- 12.55
+names(mu) <- "mu"
+sigma <- .65
+names(sigma) <- "sigma"
+
+weibull.mle <- optim(c(mu, sigma), lliktruncr,
+                     method='BFGS', control=list(fnscale=-1),
+                     y=s$end_time, d=s$failed,
+                     trunctime=s$start_time,
+                     hessian=TRUE)
+
+#log-likelihood function in terms of sigma and tp.01
+lliktruncr2 <- function (theta, y, d, trunctime) {
+  tp <- theta[1]
+  sigma <- theta[2]
+  
+  beta=1/sigma
+  eta=tp/((-log(.99))^(1/beta))
+  sum(log(( ((dweibull(y,beta,eta)/(1-pweibull(trunctime,beta,eta)) ))^d)*
+            (( (1-pweibull(y,beta,eta))/(1-pweibull(trunctime,beta,eta)))^(1-d) )))
+}
+
+#Pick starting values based on Bayes Project Results
+tp<-2500
+names(mu) <- "tp"
+sigma <- 16
+names(sigma) <- "sigma"
+
+weibull.mle2 <- optim(c(tp, sigma), lliktruncr2,
+                     method='BFGS', control=list(fnscale=-1),
+                     y=s$end_time, d=s$failed,
+                     trunctime=s$start_time,
+                     hessian=TRUE)
+weibull.mle2$par
+
+#The above seems very sensitive to starting values.
